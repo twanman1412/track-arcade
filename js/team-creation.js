@@ -17,7 +17,7 @@ function initialize() {
 
     continueButton.addEventListener('click', () => {
         saveTeams();
-        window.location.href = '../pages/difficulty-selection.html';
+        window.location.href = '../pages/select-playlist.html';
     });
 
     clearButton.addEventListener('click', () => {

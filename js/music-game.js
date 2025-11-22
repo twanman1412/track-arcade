@@ -28,16 +28,31 @@ let currentTrackInfo = null;
 let teams = [];
 let activeTeamIndex = 0;
 let comparisonYear = 2000;
+let gamePlaylist = null;
+let currentTrackIndex = 0;
 
 let playedSongs = JSON.parse(localStorage.getItem('playedSongs') || '[]');
 
 async function initializeGame() {
 
+    const savedPlaylist = localStorage.getItem('gamePlaylist');
+    if (!savedPlaylist) {
+        alert('No playlist found. Please select a playlist first.');
+        window.location.href = '../pages/select-playlist.html';
+        return;
+    }
+
+    gamePlaylist = JSON.parse(savedPlaylist);
+
+    currentTrackIndex = parseInt(localStorage.getItem('currentTrackIndex') || 0);
+    if (currentTrackIndex >= gamePlaylist.tracks.length) {
+        currentTrackIndex = 0;
+    }
+
     const savedTeams = localStorage.getItem('musicGameTeams');
     if (savedTeams) {
         teams = JSON.parse(savedTeams);
     } else {
-        // No teams, redirect to team creation
         alert('No teams found. Please create teams first.');
         window.location.href = '../pages/team-creation.html';
         return;
@@ -63,16 +78,11 @@ async function initializeGame() {
 
     updatePlayerDisplay();
 
-    currentTrackId = localStorage.getItem('currentTrackId');
-    console.log(currentTrackId)
-    if (!currentTrackId) {
-        alert("No track ID found. Please scan a QR code or enter a track URL.");
-        window.location.href = '../pages/qr-scanner.html';
-    }
-
-    const answer = localStorage.getItem('answer');
+    const answer = localStorage.getItem("answer");
     if (answer) {
-        currentTrackInfo = JSON.parse(localStorage.getItem('currentTrackInfo'));
+        console.log(answer)
+        currentTrackInfo = JSON.parse(localStorage.getItem("currentTrackInfo"));
+        console.log(currentTrackInfo)
         updateTrackInfo();
         await submitAnswer(answer, false);
     } else {
@@ -85,12 +95,17 @@ async function next() {
     localStorage.removeItem("answer")
 
     const releaseYear = new Date(currentTrackInfo.album.release_date).getFullYear();
+    comparisonYearElement.textContent = releaseYear.toString();
     localStorage.setItem('comparisonYear', releaseYear.toString());
+
+    currentTrackIndex++;
+    localStorage.setItem('currentTrackIndex', currentTrackIndex.toString());
 
     activeTeamIndex = (activeTeamIndex + 1) % teams.length;
     localStorage.setItem('activeTeamIndex', activeTeamIndex.toString());
 
-    location.href = "../pages/qr-scanner.html";
+    updatePlayerDisplay();
+    await loadNextTrack();
 }
 
 async function loadNextTrack() {
@@ -104,6 +119,15 @@ async function loadNextTrack() {
     resultContainer.classList.add('hidden');
     trackInfo.classList.add('hidden');
 
+    if (currentTrackIndex >= gamePlaylist.tracks.length) {
+        alert('You have played all tracks in the playlist!');
+        window.location.href = require('path').join(__dirname, 'select-playlist.html');
+        return;
+    }
+
+    const track = gamePlaylist.tracks[currentTrackIndex];
+    currentTrackId = track.id;
+
     try {
         const doPlay = await loadTrackInfo();
         if (doPlay) {
@@ -113,12 +137,12 @@ async function loadNextTrack() {
         console.error('Error loading track:', error);
         alert('Failed to load track: ' + error.message);
     }
-
 }
 
 async function loadTrackInfo() {
     try {
         currentTrackInfo = await getTrackInfo(currentTrackId);
+        localStorage.setItem("currentTrackInfo", JSON.stringify(currentTrackInfo));
 
         updateTrackInfo();
 
@@ -180,10 +204,9 @@ async function submitAnswer(answer, doScore = true) {
             teamScores[activeTeam] += 1;
             localStorage.setItem('teamScores', JSON.stringify(teamScores));
             updatePlayerDisplay();
-
         }
 
-        saveTrackHistory(activeTeam, isCorrect);
+        saveTrackHistory(activeTeam, isCorrect, currentTrackId, currentTrackInfo);
 
         if (teamScores[activeTeam] >= 10) {
             localStorage.setItem('winnerTeam', activeTeam);
@@ -202,9 +225,10 @@ function updatePlayerDisplay() {
     activePlayerDisplay.textContent = activeTeam;
     scoreDisplay.textContent = teamScores[activeTeam];
 }
+
 function viewLeaderboard() {
     localStorage.setItem("currentTrackInfo", JSON.stringify(currentTrackInfo));
-    localStorage.setItem("currentPage", "music-game-jora");
+    localStorage.setItem("currentPage", "music-game");
     window.location.href = '../pages/leaderboard.html';
 }
 

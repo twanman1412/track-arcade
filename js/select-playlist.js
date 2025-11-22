@@ -1,7 +1,6 @@
 const playlistUrlInput = document.getElementById('playlist-url');
 const loadPlaylistBtn = document.getElementById('load-playlist-btn');
 const usePlaylistBtn = document.getElementById('use-playlist-btn');
-const backButton = document.getElementById('back-button');
 const playlistInfo = document.getElementById('playlist-info');
 const playlistImage = document.getElementById('playlist-image');
 const playlistName = document.getElementById('playlist-name');
@@ -14,7 +13,7 @@ const errorMessage = document.getElementById('error-message');
 import { isAuthenticated, initiateSpotifyLogin, getPlaylistInfo, getPlaylistTracks } from './spotify.js';
 
 // Track list data
-let currentPlaylist = {
+let currentPlaylist = JSON.parse(localStorage.getItem('gamePlaylist')) ?? {
     name: '',
     owner: '',
     image: '',
@@ -24,7 +23,6 @@ let currentPlaylist = {
 async function initialize() {
     loadPlaylistBtn.addEventListener('click', handleLoadPlaylist);
     usePlaylistBtn.addEventListener('click', handleUsePlaylist);
-    backButton.addEventListener('click', navigateBack);
 
     if (!isAuthenticated()) {
         try {
@@ -34,6 +32,11 @@ async function initialize() {
             console.error('Authentication error:', error);
         }
     }
+
+	if (currentPlaylist.tracks.length > 0) {
+		displayPlaylistInfo();
+		usePlaylistBtn.disabled = false;
+	}
 }
 
 async function handleLoadPlaylist() {
@@ -54,7 +57,7 @@ async function handleLoadPlaylist() {
     showLoading(true);
 
     try {
-        await fetchRealPlaylistData(playlistId);
+        await fetchPlaylistData(playlistId);
         showLoading(false);
         displayPlaylistInfo();
         usePlaylistBtn.disabled = false;
@@ -69,7 +72,7 @@ function extractPlaylistId(url) {
     return match ? match[1] : null;
 }
 
-async function fetchRealPlaylistData(playlistId) {
+async function fetchPlaylistData(playlistId) {
     try {
         const playlistData = await getPlaylistInfo(playlistId);
         const tracks = await getPlaylistTracks(playlistId);
@@ -139,7 +142,7 @@ function handleUsePlaylist() {
 
     localStorage.setItem('gamePlaylist', JSON.stringify(playlistData));
 
-    window.location.href = require('path').join(__dirname, 'music-game-playlist.html');
+    window.location.href = require('path').join(__dirname, 'music-game.html');
 }
 
 function shuffleArray(array) {
@@ -148,10 +151,6 @@ function shuffleArray(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
-}
-
-function navigateBack() {
-    window.location.href = require('path').join(__dirname, 'difficulty-selection.html');
 }
 
 function showLoading(isLoading) {

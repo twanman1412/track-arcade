@@ -8,15 +8,7 @@ function initialize() {
         if (previousPage === 'victory') {
             window.location.href = '../pages/victory.html';
         } else {
-            switch (localStorage.getItem("gameDifficulty")) {
-                case "easy":
-                    window.location.href = '../pages/music-game-jora.html';
-                    break;
-                case "medium":
-                    window.location.href = '../pages/music-game-playlist.html';
-                    break;
-
-            }
+            window.location.href = '../pages/music-game.ctml';
         }
     });
 

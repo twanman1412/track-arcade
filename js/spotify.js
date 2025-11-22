@@ -14,19 +14,11 @@ async function initiateSpotifyLogin() {
             throw new Error("Authentication failed");
         }
 
-        const path = require('path');
-        let config;
-        try {
-            config = require(path.join(__dirname, 'js/config.js'));
-        } catch (e) {
-            try {
-                config = require(path.join(__dirname, '../js/config.js'));
-            } catch (e) {
-                console.error("Error loading config.js:", e);
-                throw new Error("Config file not found");
-            }
-        }
-
+		const client_id = process.env.SPOTIFY_CLIENT_ID;
+		if (!client_id) {
+			throw new Error("Spotify Client ID is not set in environment variables");
+		}
+		console.log(client_id);
        const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
            method: 'POST',
            headers: {
@@ -36,7 +28,7 @@ async function initiateSpotifyLogin() {
                grant_type: 'authorization_code',
                code: result_code,
                redirect_uri: 'http://127.0.0.1:8888/callback',
-               client_id: config.SPOTIFY_CLIENT_ID,
+               client_id: client_id,
                code_verifier: code_verifier,
            }),
        });

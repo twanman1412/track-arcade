@@ -13,12 +13,13 @@
   "license": "MIT",
   "author": "Twan Kuipers",
   "type": "commonjs",
-  "main": "js/electron.js",
+  "main": "js/electron.cjs",
   "scripts": {
-    "start": "electron .",
+    "start": "source ./.env && electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "dotenv": "^17.2.3",
     "electron": "^35.1.5",
     "html5-qrcode": "^2.3.8",
     "node-fetch": "^2.7.0"

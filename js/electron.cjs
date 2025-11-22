@@ -1,9 +1,9 @@
 const { app, BrowserWindow, shell, ipcMain } = require('electron');
+require('dotenv').config();
 
 let mainWindow;
 
-const config = require('./config')
-const CLIENT_ID = config.SPOTIFY_CLIENT_ID;
+const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID
 const REDIRECT_URI = 'http://127.0.0.1:8888/callback';
 const SCOPES = [
     'user-read-private',
