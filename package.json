@@ -1,27 +1,38 @@
 {
-  "name": "qr-music-hits",
+  "name": "track-arcade",
+  "productName": "track-arcade",
   "version": "1.0.0",
-  "description": "An electron app to play the game qr-music-hits",
-  "homepage": "https://github.com/twanman1412/qr-music-hits#readme",
+  "description": "An electron app to play the game track-arcade",
+  "homepage": "https://github.com/twanman1412/track-arcade#readme",
   "bugs": {
-    "url": "https://github.com/twanman1412/qr-music-hits/issues"
+    "url": "https://github.com/twanman1412/track-arcade/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/twanman1412/qr-music-hits.git"
+    "url": "git+https://github.com/twanman1412/track-arcade.git"
   },
   "license": "MIT",
   "author": "Twan Kuipers",
   "type": "commonjs",
   "main": "js/electron.cjs",
   "scripts": {
-    "start": "source ./.env && electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron-forge start",
+    "package": "electron-forge package"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
-    "electron": "^35.1.5",
-    "html5-qrcode": "^2.3.8",
+    "electron-squirrel-startup": "^1.0.1",
     "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.10.2",
+    "@electron-forge/maker-deb": "^7.10.2",
+    "@electron-forge/maker-rpm": "^7.10.2",
+    "@electron-forge/maker-squirrel": "^7.10.2",
+    "@electron-forge/maker-zip": "^7.10.2",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.10.2",
+    "@electron-forge/plugin-fuses": "^7.10.2",
+    "@electron/fuses": "^1.8.0",
+    "electron": "39.2.3"
   }
 }
